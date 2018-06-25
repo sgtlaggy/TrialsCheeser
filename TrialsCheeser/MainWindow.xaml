@@ -5,8 +5,22 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TrialsCheeser"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow" Height="130.73" Width="256.101" ResizeMode="NoResize">
     <Grid>
-        
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition Height="2*"/>
+        </Grid.RowDefinitions>
+        <Label Content="Other Host's IP" Grid.Row="0"/>
+        <TextBox Name="HostIP" Grid.Row="1" Margin="2 0" VerticalContentAlignment="Center"/>
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="4*"/>
+            </Grid.ColumnDefinitions>
+            <Ellipse Name="MatchCircle" Fill="Red" Stroke="Black" StrokeThickness="2" Margin="4 3" Grid.Column="0"/>
+            <Label Name="MatchLabel" Content="Not matched." VerticalAlignment="Center" Grid.Column="1"/>
+        </Grid>
     </Grid>
 </Window>
