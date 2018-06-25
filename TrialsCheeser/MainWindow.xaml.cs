@@ -19,7 +19,7 @@ namespace TrialsCheeser
     /// </summary>
     public partial class MainWindow : Window
     {
-        private ICaptureDevice Device;
+        private LibPcapLiveDevice Device;
         private readonly Regex PartialIPRegex = new Regex("[0-9.]");
         private Timer PacketTimer = new Timer(500);
         private int PacketCount = 0;
@@ -27,14 +27,17 @@ namespace TrialsCheeser
         public MainWindow()
         {
             InitializeComponent();
-            GetCaptureDevice();
             HostIP.Focus();
-            Device.OnPacketArrival += new PacketArrivalEventHandler(OnPacketArrival);
-            Device.Open(DeviceMode.Promiscuous, 1000);
-            Device.Filter = "ip and udp and host 0.0.0.0";
-            Device.StartCapture();
-            PacketTimer.Elapsed += async (sender, e) => Timer_Elapsed();
-            PacketTimer.Start();
+            GetCaptureDevice();
+            if (Device != null)
+            {
+                Device.OnPacketArrival += new PacketArrivalEventHandler(OnPacketArrival);
+                Device.Open(DeviceMode.Promiscuous, 1000);
+                Device.Filter = "ip and udp and host 0.0.0.0";
+                Device.StartCapture();
+                PacketTimer.Elapsed += async (sender, e) => Timer_Elapsed();
+                PacketTimer.Start();
+            }
         }
 
         private void UpdateMatchNotifier()
@@ -75,11 +78,10 @@ namespace TrialsCheeser
         {
             var w = new DevicePickerWindow();
             w.ShowDialog();
-            Device = w.SelectedDevice;
-            if (Device is null)
-            {
+            if (w.SelectedDevice == null)
                 Close();
-            }
+            else
+                Device = w.SelectedDevice as LibPcapLiveDevice;
         }
 
         private void DevicesButton_Click(object sender, RoutedEventArgs e)
@@ -115,7 +117,7 @@ namespace TrialsCheeser
             if (IPAddress.TryParse(text, out IPAddress ip) && text.Split(new[] { '.' }, StringSplitOptions.None).Length == 4)
             {
                 HostIP.Background = Brushes.LightGreen;
-                Device.Filter = $"ip and host {text}";
+                Device.Filter = $"ip and udp and host {text}";
             }
             else
             {
@@ -126,8 +128,15 @@ namespace TrialsCheeser
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            Device.StopCapture();
-            Device.Close();
+            if (Device != null)
+            {
+                if (PacketTimer.Enabled)
+                    PacketTimer.Stop();
+                if (Device.Started)
+                    Device.StopCapture();
+                if (Device.Opened)
+                    Device.Close();
+            }
         }
     }
 }
