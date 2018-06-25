@@ -5,7 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TrialsCheeser"
         mc:Ignorable="d"
-        Title="Trials Cheeser" Height="130.73" Width="256.101" ResizeMode="NoResize">
+        Title="Trials Cheeser" Height="130.73" Width="256.101" ResizeMode="NoResize"
+        Closing="Window_Closing">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition/>
@@ -21,7 +22,7 @@
                 <ColumnDefinition Width="4*"/>
             </Grid.ColumnDefinitions>
             <Ellipse Name="MatchCircle" Fill="Red" Stroke="Black" StrokeThickness="2" Margin="4 3" Grid.Column="0"/> <!-- Red | Orange | Lime -->
-            <Label Name="MatchLabel" Content="Not matched." VerticalAlignment="Center" Grid.Column="1"/> <!-- Not matched. | Skimming... | Matched! -->
+            <Label Name="MatchLabel" Content="Not matched." VerticalAlignment="Center" Grid.Column="1"/> <!-- Not matched. | Checking... | Matched! -->
         </Grid>
     </Grid>
 </Window>

@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using System.Windows.Media;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Controls;
 using SharpPcap;
 using SharpPcap.LibPcap;
+using System.Timers;
 
 namespace TrialsCheeser
 {
@@ -17,21 +19,63 @@ namespace TrialsCheeser
     /// </summary>
     public partial class MainWindow : Window
     {
-        private LibPcapLiveDevice Device;
+        private ICaptureDevice Device;
         private readonly Regex PartialIPRegex = new Regex("[0-9.]");
+        private Timer PacketTimer = new Timer(500);
+        private int PacketCount = 0;
 
         public MainWindow()
         {
             InitializeComponent();
             GetCaptureDevice();
             HostIP.Focus();
+            Device.OnPacketArrival += new PacketArrivalEventHandler(OnPacketArrival);
+            Device.Open(DeviceMode.Promiscuous, 1000);
+            Device.Filter = "ip and udp and host 0.0.0.0";
+            Device.StartCapture();
+            PacketTimer.Elapsed += async (sender, e) => Timer_Elapsed();
+            PacketTimer.Start();
+        }
+
+        private void UpdateMatchNotifier()
+        {
+            Brush brush;
+            string text;
+            if (PacketCount == 0)
+            {
+                brush = Brushes.Red;
+                text = "Not matched.";
+            }
+            else if (PacketCount <= 5)
+            {
+                brush = Brushes.Orange;
+                text = "Checking...";
+            }
+            else
+            {
+                brush = Brushes.Lime;
+                text = "Matched!";
+            }
+            MatchCircle.Dispatcher.BeginInvoke((Action)(() => MatchCircle.Fill = brush));
+            MatchLabel.Dispatcher.BeginInvoke((Action)(() => MatchLabel.Content = text));
+        }
+
+        private void Timer_Elapsed()
+        {
+            UpdateMatchNotifier();
+            PacketCount = 0;
+        }
+
+        private void OnPacketArrival(object sender, CaptureEventArgs e)
+        {
+            PacketCount += 1;
         }
 
         private void GetCaptureDevice()
         {
             var w = new DevicePickerWindow();
             w.ShowDialog();
-            Device = w.SelectedDevice as LibPcapLiveDevice;
+            Device = w.SelectedDevice;
             if (Device is null)
             {
                 Close();
@@ -69,9 +113,21 @@ namespace TrialsCheeser
         {
             var text = HostIP.Text;
             if (IPAddress.TryParse(text, out IPAddress ip) && text.Split(new[] { '.' }, StringSplitOptions.None).Length == 4)
-                HostIP.Background = new SolidColorBrush(Colors.LightGreen);
+            {
+                HostIP.Background = Brushes.LightGreen;
+                Device.Filter = $"ip and host {text}";
+            }
             else
-                HostIP.Background = new SolidColorBrush(Colors.LightCoral);
+            {
+                HostIP.Background = Brushes.LightCoral;
+                Device.Filter = "ip and udp and host 0.0.0.0";
+            }
+        }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            Device.StopCapture();
+            Device.Close();
         }
     }
 }
