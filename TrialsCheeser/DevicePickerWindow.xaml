@@ -1,0 +1,25 @@
+﻿<Window x:Class="TrialsCheeser.DevicePickerWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:TrialsCheeser"
+        mc:Ignorable="d"
+        Title="Device Picker" Height="155.667" Width="283.667" KeyDown="Window_KeyDown" ResizeMode="NoResize">
+    <Grid Margin="2">
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition Height="25"/>
+        </Grid.RowDefinitions>
+        <ListBox Name="DeviceList" Grid.Row="0" SelectionChanged="DeviceList_SelectionChanged" GotFocus="OtherControl_GotFocus"/>
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="75"/>
+                <ColumnDefinition Width="75"/>
+            </Grid.ColumnDefinitions>
+            <Button Name="RefreshButton" Content="Refresh" Grid.Column="1" Margin="0 2 1 0" Click="RefreshButton_Click" GotFocus="RefreshButton_GotFocus"/>
+            <Button Name="OkButton" Content="OK" Grid.Column="2" Margin="1 2 0 0" IsDefault="True" IsEnabled="False" Click="OkButton_Click" GotFocus="OtherControl_GotFocus"/>
+        </Grid>
+    </Grid>
+</Window>
