@@ -11,7 +11,7 @@
             <RowDefinition/>
             <RowDefinition Height="25"/>
         </Grid.RowDefinitions>
-        <ListBox Name="DeviceList" Grid.Row="0" SelectionChanged="DeviceList_SelectionChanged" GotFocus="OtherControl_GotFocus"/>
+        <ListBox Name="DeviceList" Grid.Row="0" SelectionChanged="DeviceList_SelectionChanged" GotFocus="OtherControl_GotFocus" MouseDoubleClick="DeviceList_MouseDoubleClick"/>
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>

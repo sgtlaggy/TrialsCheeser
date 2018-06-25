@@ -82,5 +82,11 @@ namespace TrialsCheeser
         {
             RefreshButton.IsDefault = false;
         }
+
+        private void DeviceList_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            SelectedDevice = Devices[DeviceList.SelectedIndex];
+            Close();
+        }
     }
 }
