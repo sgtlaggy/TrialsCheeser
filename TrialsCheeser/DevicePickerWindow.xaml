@@ -5,7 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TrialsCheeser"
         mc:Ignorable="d"
-        Title="Device Picker" Height="155.667" Width="283.667" KeyDown="Window_KeyDown" ResizeMode="NoResize">
+        Title="Device Picker" Height="155.667" Width="283.667" KeyDown="Window_KeyDown"
+        ResizeMode="NoResize" WindowStartupLocation="CenterScreen">
     <Grid Margin="2">
         <Grid.RowDefinitions>
             <RowDefinition/>
