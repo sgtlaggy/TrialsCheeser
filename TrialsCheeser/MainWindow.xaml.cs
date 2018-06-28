@@ -21,6 +21,7 @@ namespace TrialsCheeser
         private readonly Regex PartialIPPattern = new Regex("[0-9.]");
         private Timer PacketTimer = new Timer(500);
         private int PacketCount = 0;
+        private WebClient WebClient = new WebClient();
 
         public MainWindow()
         {
@@ -151,15 +152,34 @@ namespace TrialsCheeser
             SetDeviceFilter();
         }
 
+        private void CopyIPButton_FocusChanged(object sender, RoutedEventArgs e)
+        {
+            CopyIPButton.IsDefault = !CopyIPButton.IsDefault;
+        }
+
+        private async void CopyIPButton_Click(object sender, RoutedEventArgs e)
+        {
+            CopyIPButton.IsEnabled = false;
+            try
             {
-                HostIP.Background = Brushes.LightGreen;
-                Device.Filter = $"ip and udp and host {text}";
+                string response = (await WebClient.DownloadStringTaskAsync("https://ipinfo.io/ip")).Trim(); // BUG: Sometimes blocks UI when host unreachable.
+                if (IPAddress.TryParse(response, out IPAddress ip))
+                {
+                    Clipboard.SetText(ip.ToString());
+                    CopyIPButton.Content = "Copied";
+                }
+                else
+                {
+                    CopyIPButton.Content = "Error";
+                }
             }
-            else
+            catch (WebException)
             {
-                HostIP.Background = Brushes.LightCoral;
-                Device.Filter = "ip and udp and host 0.0.0.0";
+                CopyIPButton.Content = "Error";
             }
+            await Task.Delay(2000);
+            CopyIPButton.Content = "Copy My IP";
+            CopyIPButton.IsEnabled = true;
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)

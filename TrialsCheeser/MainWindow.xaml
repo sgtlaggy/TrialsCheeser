@@ -19,10 +19,12 @@
         <Grid Grid.Row="2">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
-                <ColumnDefinition Width="4*"/>
+                <ColumnDefinition Width="2*"/>
+                <ColumnDefinition Width="2*"/>
             </Grid.ColumnDefinitions>
             <Ellipse Name="MatchCircle" Fill="Red" Stroke="Black" StrokeThickness="2" Margin="4 3" Grid.Column="0"/> <!-- Red | Orange | Lime -->
             <Label Name="MatchLabel" Content="Not matched." VerticalAlignment="Center" Grid.Column="1"/> <!-- Not matched. | Checking... | Matched! -->
+            <Button Name="CopyIPButton" Content="Copy My IP" IsDefault="False" VerticalAlignment="Bottom" HorizontalAlignment="Right" HorizontalContentAlignment="Center" Width="75" Margin="2" Grid.Column="2" GotFocus="CopyIPButton_FocusChanged" LostFocus="CopyIPButton_FocusChanged" Click="CopyIPButton_Click"/> <!-- Copy My IP | Error | Copied -->
         </Grid>
     </Grid>
 </Window>
