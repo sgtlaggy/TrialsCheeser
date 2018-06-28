@@ -12,15 +12,15 @@
             <RowDefinition/>
             <RowDefinition Height="25"/>
         </Grid.RowDefinitions>
-        <ListBox Name="DeviceList" Grid.Row="0" SelectionChanged="DeviceList_SelectionChanged" GotFocus="OtherControl_GotFocus" MouseDoubleClick="DeviceList_MouseDoubleClick"/>
+        <ListBox Name="DeviceList" Grid.Row="0" SelectionChanged="DeviceList_SelectionChanged" MouseDoubleClick="DeviceList_MouseDoubleClick"/>
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
                 <ColumnDefinition Width="75"/>
                 <ColumnDefinition Width="75"/>
             </Grid.ColumnDefinitions>
-            <Button Name="RefreshButton" Content="Refresh" Grid.Column="1" Margin="0 2 1 0" Click="RefreshButton_Click" GotFocus="RefreshButton_GotFocus"/>
-            <Button Name="OkButton" Content="OK" Grid.Column="2" Margin="1 2 0 0" IsDefault="True" IsEnabled="False" Click="OkButton_Click" GotFocus="OtherControl_GotFocus"/>
+            <Button Name="RefreshButton" Content="Refresh" Margin="0 2 1 0" Grid.Column="1" Click="RefreshButton_Click" GotFocus="RefreshButton_FocusChanged" LostFocus="RefreshButton_FocusChanged"/>
+            <Button Name="OkButton" Content="OK" Margin="1 2 0 0" Grid.Column="2" IsDefault="True" IsEnabled="False" Click="OkButton_Click"/>
         </Grid>
     </Grid>
 </Window>

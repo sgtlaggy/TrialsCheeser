@@ -14,8 +14,8 @@
             <RowDefinition Height="2*"/>
         </Grid.RowDefinitions>
         <Label Content="Other Host's IP" Grid.Row="0"/>
-        <Button Name="DevicesButton" Content="Devices" Click="DevicesButton_Click" Margin="2" Grid.Row="0" HorizontalAlignment="Right"/>
-        <TextBox Name="HostIP" PreviewTextInput="HostIP_PreviewTextInput" DataObject.Pasting="HostIP_Pasting" TextWrapping="NoWrap" MaxLength="15" Grid.Row="1" Margin="2 0" VerticalContentAlignment="Center" Background="LightCoral" TextChanged="HostIP_TextChanged"/> <!-- LightCoral | LightGreen -->
+        <Button Name="DevicesButton" Content="Devices" IsDefault="False" HorizontalAlignment="Right" Margin="2" Grid.Row="0" GotFocus="DevicesButton_FocusChanged" LostFocus="DevicesButton_FocusChanged" Click="DevicesButton_Click"/>
+        <TextBox Name="HostIPTextBox" Background="LightCoral" TextWrapping="NoWrap" MaxLength="15" VerticalContentAlignment="Center" Margin="2 0" Grid.Row="1" PreviewTextInput="HostIPTextBox_PreviewTextInput" TextChanged="HostIPTextBox_TextChanged" DataObject.Pasting="HostIPTextBox_Pasting"/> <!-- LightCoral | LightGreen -->
         <Grid Grid.Row="2">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>

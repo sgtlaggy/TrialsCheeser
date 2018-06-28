@@ -1,16 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using SharpPcap;
+using SharpPcap.LibPcap;
+using System;
 using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using System.Windows.Media;
-using System.Windows;
-using System.Windows.Input;
-using System.Windows.Controls;
-using SharpPcap;
-using SharpPcap.LibPcap;
 using System.Timers;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Input;
+using System.Windows.Media;
 
 namespace TrialsCheeser
 {
@@ -20,21 +18,17 @@ namespace TrialsCheeser
     public partial class MainWindow : Window
     {
         private LibPcapLiveDevice Device;
-        private readonly Regex PartialIPRegex = new Regex("[0-9.]");
+        private readonly Regex PartialIPPattern = new Regex("[0-9.]");
         private Timer PacketTimer = new Timer(500);
         private int PacketCount = 0;
 
         public MainWindow()
         {
             InitializeComponent();
-            HostIP.Focus();
+            HostIPTextBox.Focus();
             GetCaptureDevice();
             if (Device != null)
             {
-                Device.OnPacketArrival += new PacketArrivalEventHandler(OnPacketArrival);
-                Device.Open(DeviceMode.Promiscuous, 1000);
-                Device.Filter = "ip and udp and host 0.0.0.0";
-                Device.StartCapture();
                 PacketTimer.Elapsed += async (sender, e) => Timer_Elapsed();
                 PacketTimer.Start();
             }
@@ -59,8 +53,11 @@ namespace TrialsCheeser
                 brush = Brushes.Lime;
                 text = "Matched!";
             }
-            MatchCircle.Dispatcher.BeginInvoke((Action)(() => MatchCircle.Fill = brush));
-            MatchLabel.Dispatcher.BeginInvoke((Action)(() => MatchLabel.Content = text));
+            Dispatcher.BeginInvoke((Action)(() =>
+            {
+                MatchCircle.Fill = brush;
+                MatchLabel.Content = text;
+            }));
         }
 
         private void Timer_Elapsed()
@@ -76,12 +73,33 @@ namespace TrialsCheeser
 
         private void GetCaptureDevice()
         {
+            if (Device != null)
+            {
+                if (Device.Started)
+                    Device.StopCapture();
+                if (Device.Opened)
+                    Device.Close();
+            }
             var w = new DevicePickerWindow();
             w.ShowDialog();
             if (w.SelectedDevice == null)
+            {
                 Close();
+            }
             else
+            {
                 Device = w.SelectedDevice as LibPcapLiveDevice;
+                Device.OnPacketArrival -= OnPacketArrival;
+                Device.OnPacketArrival += OnPacketArrival;
+                Device.Open(DeviceMode.Promiscuous, 1000);
+                SetDeviceFilter();
+                Device.StartCapture();
+            }
+        }
+
+        private void DevicesButton_FocusChanged(object sender, RoutedEventArgs e)
+        {
+            DevicesButton.IsDefault = !DevicesButton.IsDefault;
         }
 
         private void DevicesButton_Click(object sender, RoutedEventArgs e)
@@ -89,12 +107,27 @@ namespace TrialsCheeser
             GetCaptureDevice();
         }
 
-        private bool ValidateInput(string ip)
+        private void SetDeviceFilter()
         {
-            return PartialIPRegex.IsMatch(ip);
+            var text = HostIPTextBox.Text;
+            if (IPAddress.TryParse(text, out IPAddress ip) && text.Split(new[] { '.' }, StringSplitOptions.None).Length == 4)
+            {
+                HostIPTextBox.Background = Brushes.LightGreen;
+                Device.Filter = $"ip and udp and host {ip.ToString()}";
+            }
+            else
+            {
+                HostIPTextBox.Background = Brushes.LightCoral;
+                Device.Filter = "ip and udp and host 0.0.0.0";
+            }
         }
 
-        private void HostIP_Pasting(object sender, DataObjectPastingEventArgs e)
+        private bool ValidateInput(string ip)
+        {
+            return PartialIPPattern.IsMatch(ip);
+        }
+
+        private void HostIPTextBox_Pasting(object sender, DataObjectPastingEventArgs e)
         {
             if (e.DataObject.GetDataPresent(typeof(string)))
             {
@@ -103,18 +136,21 @@ namespace TrialsCheeser
                     e.CancelCommand();
             }
             else
+            {
                 e.CancelCommand();
+            }
         }
 
-        private void HostIP_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        private void HostIPTextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
             e.Handled = !ValidateInput(e.Text);
         }
 
-        private void HostIP_TextChanged(object sender, TextChangedEventArgs e)
+        private void HostIPTextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
-            var text = HostIP.Text;
-            if (IPAddress.TryParse(text, out IPAddress ip) && text.Split(new[] { '.' }, StringSplitOptions.None).Length == 4)
+            SetDeviceFilter();
+        }
+
             {
                 HostIP.Background = Brushes.LightGreen;
                 Device.Filter = $"ip and udp and host {text}";
