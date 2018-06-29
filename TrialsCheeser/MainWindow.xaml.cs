@@ -2,6 +2,7 @@
 using SharpPcap.LibPcap;
 using System;
 using System.Net;
+using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Timers;
@@ -21,7 +22,7 @@ namespace TrialsCheeser
         private readonly Regex PartialIPPattern = new Regex("[0-9.]");
         private Timer PacketTimer = new Timer(500);
         private int PacketCount = 0;
-        private WebClient WebClient = new WebClient();
+        private HttpClient HttpClient = new HttpClient();
 
         public MainWindow()
         {
@@ -160,23 +161,26 @@ namespace TrialsCheeser
         private async void CopyIPButton_Click(object sender, RoutedEventArgs e)
         {
             CopyIPButton.IsEnabled = false;
+            CopyIPButton.Content = "...";
+            string status;
             try
             {
-                string response = (await WebClient.DownloadStringTaskAsync("https://ipinfo.io/ip")).Trim(); // BUG: Sometimes blocks UI when host unreachable.
+                string response = (await HttpClient.GetStringAsync("https://ipinfo.io/ip")).Trim();
                 if (IPAddress.TryParse(response, out IPAddress ip))
                 {
                     Clipboard.SetText(ip.ToString());
-                    CopyIPButton.Content = "Copied";
+                    status = "Copied";
                 }
                 else
                 {
-                    CopyIPButton.Content = "Error";
+                    status = "Error";
                 }
             }
-            catch (WebException)
+            catch (HttpRequestException)
             {
-                CopyIPButton.Content = "Error";
+                status = "Error";
             }
+            CopyIPButton.Content = status;
             await Task.Delay(2000);
             CopyIPButton.Content = "Copy My IP";
             CopyIPButton.IsEnabled = true;
