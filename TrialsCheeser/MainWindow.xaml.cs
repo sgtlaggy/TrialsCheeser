@@ -20,7 +20,7 @@ namespace TrialsCheeser
     {
         private LibPcapLiveDevice Device;
         private readonly Regex PartialIPPattern = new Regex("[0-9.]");
-        private Timer PacketTimer = new Timer(500);
+        private Timer PacketTimer = new Timer(1000);
         private int PacketCount = 0;
         private HttpClient HttpClient = new HttpClient();
 
@@ -31,7 +31,7 @@ namespace TrialsCheeser
             GetCaptureDevice();
             if (Device != null)
             {
-                PacketTimer.Elapsed += async (sender, e) => Timer_Elapsed();
+                PacketTimer.Elapsed += (sender, e) => Timer_Elapsed();
                 PacketTimer.Start();
             }
         }
