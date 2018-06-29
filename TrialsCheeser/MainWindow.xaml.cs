@@ -54,11 +54,11 @@ namespace TrialsCheeser
                 brush = Brushes.Lime;
                 text = "Matched!";
             }
-            Dispatcher.BeginInvoke((Action)(() =>
+            Dispatcher.Invoke(() =>
             {
                 MatchCircle.Fill = brush;
                 MatchLabel.Content = text;
-            }));
+            });
         }
 
         private void Timer_Elapsed()
@@ -83,13 +83,13 @@ namespace TrialsCheeser
             }
             var w = new DevicePickerWindow();
             w.ShowDialog();
-            if (w.SelectedDevice == null)
+            if (w.SelectedDevice == null && Device == null)
             {
                 Close();
             }
             else
             {
-                Device = w.SelectedDevice as LibPcapLiveDevice;
+                Device = (w.SelectedDevice != null) ? w.SelectedDevice as LibPcapLiveDevice : Device;
                 Device.OnPacketArrival -= OnPacketArrival;
                 Device.OnPacketArrival += OnPacketArrival;
                 Device.Open(DeviceMode.Promiscuous, 1000);
