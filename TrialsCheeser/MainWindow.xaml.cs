@@ -23,12 +23,14 @@ namespace TrialsCheeser
         private readonly Regex PartialIPPattern = new Regex("[0-9.]");
         private Timer PacketTimer = new Timer(1000);
         private int PacketCount = 0;
+        private int MatchThreshold = 5;
         private HttpClient HttpClient = new HttpClient();
 
         public MainWindow()
         {
             InitializeComponent();
             HostIPTextBox.Focus();
+            ThresholdTextBox.Text = MatchThreshold.ToString();
             try
             {
                 GetCaptureDevice();
@@ -56,7 +58,7 @@ namespace TrialsCheeser
                 brush = Brushes.Red;
                 text = "Not matched.";
             }
-            else if (PacketCount <= 5)
+            else if (PacketCount <= MatchThreshold)
             {
                 brush = Brushes.Orange;
                 text = "Checking...";
@@ -135,7 +137,7 @@ namespace TrialsCheeser
             }
         }
 
-        private bool ValidateInput(string ip)
+        private bool ValidateIPInput(string ip)
         {
             return PartialIPPattern.IsMatch(ip);
         }
@@ -145,7 +147,7 @@ namespace TrialsCheeser
             if (e.DataObject.GetDataPresent(typeof(string)))
             {
                 var text = (string)e.DataObject.GetData(typeof(string));
-                if (!ValidateInput(text))
+                if (!ValidateIPInput(text))
                     e.CancelCommand();
             }
             else
@@ -156,12 +158,75 @@ namespace TrialsCheeser
 
         private void HostIPTextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
-            e.Handled = !ValidateInput(e.Text);
+            e.Handled = !ValidateIPInput(e.Text);
         }
 
         private void HostIPTextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
             SetDeviceFilter();
+        }
+
+        private void ChangeThreshold(int changeBy)
+        {
+            int value = MatchThreshold + changeBy;
+            if (value < 0)
+                value = 0;
+            else if (value > 99)
+                value = 99;
+            ThresholdTextBox.Text = value.ToString();
+        }
+
+        private void ThresholdTextBox_MouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            ChangeThreshold(e.Delta / 120);
+        }
+
+        private void ThresholdTextBox_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Up)
+                ChangeThreshold(1);
+            else if (e.Key == Key.Down)
+                ChangeThreshold(-1);
+        }
+
+        private void ThresholdTextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            try
+            {
+                int.Parse(e.Text);
+                e.Handled = false;
+            }
+            catch (FormatException)
+            {
+                e.Handled = true;
+            }
+        }
+
+        private void ThresholdTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            int value = int.Parse(ThresholdTextBox.Text);
+            MatchThreshold = value;
+            ThresholdTextBox.Text = value.ToString();
+        }
+
+        private void ThresholdTextBox_Pasting(object sender, DataObjectPastingEventArgs e)
+        {
+            if (e.DataObject.GetDataPresent(typeof(string)))
+            {
+                var text = (string)e.DataObject.GetData(typeof(string));
+                try
+                {
+                    int.Parse(text);
+                }
+                catch (FormatException)
+                {
+                    e.CancelCommand();
+                }
+            }
+            else
+            {
+                e.CancelCommand();
+            }
         }
 
         private void CopyIPButton_FocusChanged(object sender, RoutedEventArgs e)
