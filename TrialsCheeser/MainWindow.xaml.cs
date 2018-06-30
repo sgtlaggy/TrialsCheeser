@@ -1,6 +1,7 @@
 ﻿using SharpPcap;
 using SharpPcap.LibPcap;
 using System;
+using System.ComponentModel;
 using System.Net;
 using System.Net.Http;
 using System.Text.RegularExpressions;
@@ -28,7 +29,17 @@ namespace TrialsCheeser
         {
             InitializeComponent();
             HostIPTextBox.Focus();
-            GetCaptureDevice();
+            try
+            {
+                GetCaptureDevice();
+            }
+            catch (DllNotFoundException)
+            {
+                MessageBoxResult result = MessageBox.Show("You must have WinPcap installed to use this program.\nWould you like to go to its website now?", "WinPcap Not Installed", MessageBoxButton.YesNo, MessageBoxImage.Error);
+                if (result == MessageBoxResult.Yes)
+                    System.Diagnostics.Process.Start("https://www.winpcap.org/install/default.htm");
+                Application.Current.Shutdown();
+            }
             if (Device != null)
             {
                 PacketTimer.Elapsed += (sender, e) => Timer_Elapsed();
@@ -186,12 +197,11 @@ namespace TrialsCheeser
             CopyIPButton.IsEnabled = true;
         }
 
-        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        private void Window_Closing(object sender, CancelEventArgs e)
         {
+            PacketTimer.Enabled = false;
             if (Device != null)
             {
-                if (PacketTimer.Enabled)
-                    PacketTimer.Stop();
                 if (Device.Started)
                     Device.StopCapture();
                 if (Device.Opened)
