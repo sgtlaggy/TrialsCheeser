@@ -2,7 +2,7 @@
 
 # How To Use
 
-1. Open app
+1. Open app as admin
 2. Install WinPcap if requested
 3. Select Device - You may need to check network adapters in Control Panel to see which one is used to connect to your WiFi/Ethernet network.
 4. Ask the host of the other team to send you their IP and insert it in the red box, it should turn green.
