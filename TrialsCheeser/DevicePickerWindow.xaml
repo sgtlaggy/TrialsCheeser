@@ -6,7 +6,8 @@
         xmlns:local="clr-namespace:TrialsCheeser"
         mc:Ignorable="d"
         Title="Device Picker" Height="155.667" Width="283.667" KeyDown="Window_KeyDown"
-        ResizeMode="NoResize" WindowStartupLocation="CenterScreen">
+        ResizeMode="NoResize" WindowStartupLocation="CenterScreen"
+        FocusManager.FocusedElement="{Binding ElementName=DeviceList}">
     <Grid Margin="2">
         <Grid.RowDefinitions>
             <RowDefinition/>

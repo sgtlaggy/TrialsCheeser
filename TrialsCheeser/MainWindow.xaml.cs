@@ -29,7 +29,6 @@ namespace TrialsCheeser
         public MainWindow()
         {
             InitializeComponent();
-            HostIPTextBox.Focus();
             ThresholdTextBox.Text = MatchThreshold.ToString();
             try
             {
@@ -110,16 +109,6 @@ namespace TrialsCheeser
                 SetDeviceFilter();
                 Device.StartCapture();
             }
-        }
-
-        private void DevicesButton_FocusChanged(object sender, RoutedEventArgs e)
-        {
-            DevicesButton.IsDefault = !DevicesButton.IsDefault;
-        }
-
-        private void DevicesButton_Click(object sender, RoutedEventArgs e)
-        {
-            GetCaptureDevice();
         }
 
         private void SetDeviceFilter()
@@ -229,9 +218,15 @@ namespace TrialsCheeser
             }
         }
 
-        private void CopyIPButton_FocusChanged(object sender, RoutedEventArgs e)
+        private void Button_FocusChanged(object sender, RoutedEventArgs e)
         {
-            CopyIPButton.IsDefault = !CopyIPButton.IsDefault;
+            var btn = (Button)sender;
+            btn.IsDefault = btn.IsFocused;
+        }
+
+        private void DevicesButton_Click(object sender, RoutedEventArgs e)
+        {
+            GetCaptureDevice();
         }
 
         private async void CopyIPButton_Click(object sender, RoutedEventArgs e)

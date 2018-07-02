@@ -18,7 +18,6 @@ namespace TrialsCheeser
         {
             InitializeComponent();
             RefreshDeviceList();
-            DeviceList.Focus();
         }
 
         private void RefreshDeviceList()
@@ -45,6 +44,11 @@ namespace TrialsCheeser
                 OkButton.IsEnabled = true;
         }
 
+        private void RefreshButton_FocusChanged(object sender, RoutedEventArgs e)
+        {
+            RefreshButton.IsDefault = RefreshButton.IsFocused;
+        }
+
         private void RefreshButton_Click(object sender, RoutedEventArgs e)
         {
             RefreshDeviceList();
@@ -60,11 +64,6 @@ namespace TrialsCheeser
         {
             if (e.Key == Key.F5)
                 RefreshDeviceList();
-        }
-
-        private void RefreshButton_FocusChanged(object sender, RoutedEventArgs e)
-        {
-            RefreshButton.IsDefault = !RefreshButton.IsDefault;
         }
 
         private void DeviceList_MouseDoubleClick(object sender, MouseButtonEventArgs e)
