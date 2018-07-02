@@ -44,7 +44,7 @@ namespace TrialsCheeser
             }
             if (Device != null)
             {
-                PacketTimer.Elapsed += (sender, e) => Timer_Elapsed();
+                PacketTimer.Elapsed += Timer_Elapsed;
                 PacketTimer.Start();
             }
         }
@@ -75,7 +75,7 @@ namespace TrialsCheeser
             });
         }
 
-        private void Timer_Elapsed()
+        private void Timer_Elapsed(object sender, ElapsedEventArgs e)
         {
             UpdateMatchNotifier();
             PacketCount = 0;
@@ -122,17 +122,12 @@ namespace TrialsCheeser
             }
         }
 
-        private bool ValidateIPInput(string ip)
-        {
-            return PartialIPPattern.IsMatch(ip);
-        }
-
         private void HostIPTextBox_Pasting(object sender, DataObjectPastingEventArgs e)
         {
             if (e.DataObject.GetDataPresent(typeof(string)))
             {
                 var text = (string)e.DataObject.GetData(typeof(string));
-                if (!ValidateIPInput(text))
+                if (!PartialIPPattern.IsMatch(text))
                     e.CancelCommand();
             }
             else
@@ -143,7 +138,7 @@ namespace TrialsCheeser
 
         private void HostIPTextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
-            e.Handled = !ValidateIPInput(e.Text);
+            e.Handled = !PartialIPPattern.IsMatch(e.Text);
         }
 
         private void HostIPTextBox_TextChanged(object sender, TextChangedEventArgs e)
