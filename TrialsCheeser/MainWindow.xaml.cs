@@ -11,6 +11,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using Extensions;
 
 namespace TrialsCheeser
 {
@@ -88,12 +89,7 @@ namespace TrialsCheeser
         private void GetCaptureDevice()
         {
             if (Device != null)
-            {
-                if (Device.Started)
-                    Device.StopCapture();
-                if (Device.Opened)
-                    Device.Close();
-            }
+                Device.StopAndClose();
             var w = new DevicePickerWindow();
             w.ShowDialog();
             if (w.SelectedDevice == null && Device == null)
@@ -158,16 +154,12 @@ namespace TrialsCheeser
         private void ChangeThreshold(int changeBy)
         {
             int value = MatchThreshold + changeBy;
-            if (value < 0)
-                value = 0;
-            else if (value > 99)
-                value = 99;
-            ThresholdTextBox.Text = value.ToString();
+            ThresholdTextBox.Text = value.Clamp(0, 99).ToString();
         }
 
         private void ThresholdTextBox_MouseWheel(object sender, MouseWheelEventArgs e)
         {
-            ChangeThreshold(e.Delta / 120);
+            ChangeThreshold(e.Delta.Clamp(-1, 1));
         }
 
         private void ThresholdTextBox_PreviewKeyDown(object sender, KeyEventArgs e)
@@ -180,15 +172,7 @@ namespace TrialsCheeser
 
         private void ThresholdTextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
-            try
-            {
-                int.Parse(e.Text);
-                e.Handled = false;
-            }
-            catch (FormatException)
-            {
-                e.Handled = true;
-            }
+            e.Handled = !e.Text.IsInteger();
         }
 
         private void ThresholdTextBox_TextChanged(object sender, TextChangedEventArgs e)
@@ -203,14 +187,8 @@ namespace TrialsCheeser
             if (e.DataObject.GetDataPresent(typeof(string)))
             {
                 var text = (string)e.DataObject.GetData(typeof(string));
-                try
-                {
-                    int.Parse(text);
-                }
-                catch (FormatException)
-                {
+                if (!text.IsInteger())
                     e.CancelCommand();
-                }
             }
             else
             {
@@ -261,12 +239,7 @@ namespace TrialsCheeser
         {
             PacketTimer.Enabled = false;
             if (Device != null)
-            {
-                if (Device.Started)
-                    Device.StopCapture();
-                if (Device.Opened)
-                    Device.Close();
-            }
+                Device.StopAndClose();
         }
     }
 }
