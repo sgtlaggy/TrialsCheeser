@@ -21,7 +21,7 @@ namespace TrialsCheeser
     public partial class MainWindow : Window
     {
         private LibPcapLiveDevice Device;
-        private readonly Regex PartialIPPattern = new Regex("[0-9.]");
+        private readonly Regex NonIPPattern = new Regex("[^0-9.]");
         private Timer PacketTimer = new Timer(1000);
         private int PacketCount = 0;
         private int MatchThreshold = 5;
@@ -126,23 +126,29 @@ namespace TrialsCheeser
         {
             if (e.DataObject.GetDataPresent(typeof(string)))
             {
-                var text = (string)e.DataObject.GetData(typeof(string));
-                if (!PartialIPPattern.IsMatch(text))
-                    e.CancelCommand();
+                var clip = (string)e.DataObject.GetData(typeof(string));
+                clip = NonIPPattern.Replace(clip, string.Empty);
+                var text = HostIPTextBox.Text;
+                var start = HostIPTextBox.SelectionStart;
+                var length = HostIPTextBox.SelectionLength;
+                var caret = HostIPTextBox.CaretIndex;
+                var newText = text.Substring(0, start) + clip + text.Substring(start + length);
+                HostIPTextBox.Text = newText;
+                HostIPTextBox.CaretIndex = caret + clip.Length;
             }
-            else
-            {
-                e.CancelCommand();
-            }
+            e.CancelCommand();
         }
 
         private void HostIPTextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
-            e.Handled = !PartialIPPattern.IsMatch(e.Text);
+            e.Handled = NonIPPattern.IsMatch(e.Text);
         }
 
         private void HostIPTextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
+            var caret = HostIPTextBox.CaretIndex;
+            HostIPTextBox.Text = HostIPTextBox.Text.Replace(" ", string.Empty);
+            HostIPTextBox.CaretIndex = caret;
             SetDeviceFilter();
         }
 
@@ -179,16 +185,7 @@ namespace TrialsCheeser
 
         private void ThresholdTextBox_Pasting(object sender, DataObjectPastingEventArgs e)
         {
-            if (e.DataObject.GetDataPresent(typeof(string)))
-            {
-                var text = (string)e.DataObject.GetData(typeof(string));
-                if (!text.IsInteger())
-                    e.CancelCommand();
-            }
-            else
-            {
-                e.CancelCommand();
-            }
+            e.CancelCommand();
         }
 
         private void Button_FocusChanged(object sender, RoutedEventArgs e)
@@ -235,6 +232,11 @@ namespace TrialsCheeser
             PacketTimer.Enabled = false;
             if (Device != null)
                 Device.StopAndClose();
+        }
+
+        private void HostIPTextBox_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            e.Handled = e.Key == Key.Space;
         }
     }
 }
