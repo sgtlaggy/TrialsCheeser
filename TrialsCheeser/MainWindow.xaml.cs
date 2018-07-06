@@ -116,11 +116,14 @@ namespace TrialsCheeser
             {
                 HostIPTextBox.Background = Brushes.LightGreen;
                 Device.Filter = $"ip and udp and host {ip.ToString()}";
+                PacketCount = 0;
+                PacketTimer.Start();
             }
             else
             {
                 HostIPTextBox.Background = Brushes.LightCoral;
                 Device.Filter = null;
+                PacketTimer.Stop();
             }
         }
 
