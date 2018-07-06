@@ -26,7 +26,6 @@ namespace TrialsCheeser
         private Timer PacketTimer = new Timer(1000);
         private int PacketCount = 0;
         private int MatchThreshold = 5;
-        private bool ValidIP = false;
         private HttpClient HttpClient = new HttpClient();
 
         public MainWindow()
@@ -56,7 +55,7 @@ namespace TrialsCheeser
         {
             Brush brush;
             string text;
-            if (PacketCount == 0 || !ValidIP)
+            if (PacketCount == 0 || Device.Filter == null)
             {
                 brush = Brushes.Red;
                 text = "Not matched.";
@@ -117,12 +116,11 @@ namespace TrialsCheeser
             {
                 HostIPTextBox.Background = Brushes.LightGreen;
                 Device.Filter = $"ip and udp and host {ip.ToString()}";
-                ValidIP = true;
             }
             else
             {
                 HostIPTextBox.Background = Brushes.LightCoral;
-                ValidIP = false;
+                Device.Filter = null;
             }
         }
 
