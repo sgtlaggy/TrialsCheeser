@@ -1,4 +1,5 @@
-﻿using SharpPcap;
+﻿using Extensions;
+using SharpPcap;
 using SharpPcap.LibPcap;
 using System;
 using System.ComponentModel;
@@ -10,8 +11,8 @@ using System.Timers;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Interop;
 using System.Windows.Media;
-using Extensions;
 
 namespace TrialsCheeser
 {
@@ -31,6 +32,7 @@ namespace TrialsCheeser
         public MainWindow()
         {
             InitializeComponent();
+            RenderOptions.ProcessRenderMode = RenderMode.SoftwareOnly;
             ThresholdTextBox.Text = MatchThreshold.ToString();
             try
             {
