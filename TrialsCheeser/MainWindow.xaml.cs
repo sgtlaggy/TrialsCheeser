@@ -53,16 +53,20 @@ namespace TrialsCheeser
             SetIPInBoxFromLastSession();
         }
 
+        private bool LastIPFileExists() {
+            return File.Exists("lastIP.txt");
+        }
+
         private void SetIPInBoxFromLastSession()
         {
-            if (!File.ReadAllText("lastIP.txt").Equals("") && File.Exists("lastIP.txt"))
+            if (LastIPFileExists() && !File.ReadAllText("lastIP.txt").Equals(""))
             {
                 HostIPTextBox.Text = File.ReadAllText("lastIP.txt");
             }
             else
             {
-                File.Create("lastIP.txt");
                 HostIPTextBox.Text = "";
+                File.Create("lastIP.txt");
             }
         }
 
