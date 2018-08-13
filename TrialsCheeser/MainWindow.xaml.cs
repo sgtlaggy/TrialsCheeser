@@ -3,6 +3,7 @@ using SharpPcap;
 using SharpPcap.LibPcap;
 using System;
 using System.ComponentModel;
+using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Text.RegularExpressions;
@@ -49,6 +50,22 @@ namespace TrialsCheeser
                 PacketTimer.Elapsed += Timer_Elapsed;
                 PacketTimer.Start();
             }
+            SetIPInBoxFromLastSession();
+        }
+
+        private void SetIPInBoxFromLastSession() 
+        {
+            if (!File.ReadAllText("lastIP.txt").Equals("") && File.Exists("lastIP.txt")) 
+            {
+                HostIPTextBox.Text = File.ReadAllText("lastIP.txt");
+            }
+            else 
+            {
+                File.Create("lastIP.txt");
+                HostIPTextBox.Text = "";
+                
+            }
+            
         }
 
         private void UpdateMatchNotifier()
@@ -65,8 +82,7 @@ namespace TrialsCheeser
                 brush = Brushes.Orange;
                 text = "Checking...";
             }
-            else
-            {
+            else {
                 brush = Brushes.Lime;
                 text = "Matched!";
             }
@@ -155,6 +171,7 @@ namespace TrialsCheeser
             HostIPTextBox.Text = HostIPTextBox.Text.Replace(" ", string.Empty);
             HostIPTextBox.CaretIndex = caret;
             SetDeviceFilter();
+            File.WriteAllText("lastIP.txt", HostIPTextBox.Text);
         }
 
         private void ChangeThreshold(int changeBy)
