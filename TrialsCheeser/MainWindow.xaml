@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TrialsCheeser"
         mc:Ignorable="d"
-        Title="Trials Cheeser" Height="124.73" Width="256.101" ResizeMode="CanMinimize"
+        Title="Trials Cheeser" Height="180.73" Width="256.101" ResizeMode="CanMinimize"
         Closing="Window_Closing" WindowStartupLocation="CenterScreen"
         FocusManager.FocusedElement="{Binding ElementName=HostIPTextBox}">
     <Grid>
@@ -29,7 +29,7 @@
                 <ColumnDefinition Width="2*"/>
                 <ColumnDefinition Width="2*"/>
             </Grid.ColumnDefinitions>
-            <Ellipse Name="MatchCircle" Fill="Red" Stroke="Black" StrokeThickness="2" Margin="4 3" Grid.Column="0"/> <!-- Red | Orange | Lime -->
+            <Ellipse Name="MatchCircle" Fill="Red" Stroke="Black" StrokeThickness="2" Margin="2.5 3" Grid.Column="0" Height="45" Width="45"/> <!-- Red | Orange | Lime -->
             <Label Name="MatchLabel" Content="Not matched." VerticalAlignment="Center" Grid.Column="1"/> <!-- Not matched. | Checking... | Matched! -->
             <Button Name="CopyIPButton" Content="Copy My IP" IsDefault="False" VerticalAlignment="Bottom" HorizontalAlignment="Right" HorizontalContentAlignment="Center" Width="75" Margin="2" Grid.Column="2" GotFocus="Button_FocusChanged" LostFocus="Button_FocusChanged" Click="CopyIPButton_Click"/> <!-- Copy My IP | Error | Copied -->
         </Grid>
