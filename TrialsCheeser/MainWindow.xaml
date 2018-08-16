@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TrialsCheeser"
         mc:Ignorable="d"
-        Title="Trials Cheeser" Height="174.73" Width="256.101" ResizeMode="CanMinimize"
+        Title="Trials Cheeser" Height="180.73" Width="256.101" ResizeMode="CanMinimize"
         Closing="Window_Closing" WindowStartupLocation="CenterScreen"
         FocusManager.FocusedElement="{Binding ElementName=HostIPTextBox}">
     <Grid>
