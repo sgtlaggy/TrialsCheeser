@@ -28,6 +28,7 @@ namespace TrialsCheeser
         private int PacketCount = 0;
         private int MatchThreshold = 5;
         private HttpClient HttpClient = new HttpClient();
+        private string LastIPFilePath = Environment.ExpandEnvironmentVariables(@"%APPDATA%\TrialsCheeser_LastIP.txt");
 
         public MainWindow()
         {
@@ -54,19 +55,19 @@ namespace TrialsCheeser
         }
 
         private bool LastIPFileExists() {
-            return File.Exists("lastIP.txt");
+            return File.Exists(LastIPFilePath);
         }
 
         private void SetIPInBoxFromLastSession()
         {
-            if (LastIPFileExists() && !File.ReadAllText("lastIP.txt").Equals(""))
+            if (LastIPFileExists() && !File.ReadAllText(LastIPFilePath).Equals(""))
             {
-                HostIPTextBox.Text = File.ReadAllText("lastIP.txt");
+                HostIPTextBox.Text = File.ReadAllText(LastIPFilePath);
             }
             else
             {
                 HostIPTextBox.Text = "";
-                File.Create("lastIP.txt");
+                File.Create(LastIPFilePath);
             }
         }
 
@@ -174,7 +175,7 @@ namespace TrialsCheeser
             HostIPTextBox.Text = HostIPTextBox.Text.Replace(" ", string.Empty);
             HostIPTextBox.CaretIndex = caret;
             SetDeviceFilter();
-            File.WriteAllText("lastIP.txt", HostIPTextBox.Text);
+            File.WriteAllText(LastIPFilePath, HostIPTextBox.Text);
         }
 
         private void ChangeThreshold(int changeBy)
