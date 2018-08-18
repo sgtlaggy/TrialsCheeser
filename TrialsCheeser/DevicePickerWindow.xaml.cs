@@ -1,5 +1,6 @@
 ﻿using SharpPcap;
 using SharpPcap.LibPcap;
+using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -70,6 +71,14 @@ namespace TrialsCheeser
         {
             SelectedDevice = Devices[DeviceList.SelectedIndex];
             Close();
+        }
+
+        protected override void OnClosed(EventArgs e)
+        {
+            if (SelectedDevice != null) {
+                Config.Set("lastSession/deviceName", SelectedDevice.Name);
+            }
+            base.OnClosed(e);
         }
     }
 }

@@ -7,5 +7,9 @@ namespace TrialsCheeser
     /// </summary>
     public partial class App : Application
     {
+        public App()
+        {
+            Config.Load();
+        }
     }
 }

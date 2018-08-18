@@ -89,6 +89,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Config.cs" />
     <Compile Include="DevicePickerWindow.xaml.cs">
       <DependentUpon>DevicePickerWindow.xaml</DependentUpon>
     </Compile>

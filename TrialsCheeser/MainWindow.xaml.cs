@@ -26,7 +26,7 @@ namespace TrialsCheeser
         private readonly Regex NonIPPattern = new Regex("[^0-9.]");
         private Timer PacketTimer = new Timer(1000);
         private int PacketCount = 0;
-        private int MatchThreshold = 5;
+        private int MatchThreshold;
         private HttpClient HttpClient = new HttpClient();
         private string LastIPFilePath = Environment.ExpandEnvironmentVariables(@"%APPDATA%\TrialsCheeser_LastIP.txt");
 
@@ -34,10 +34,13 @@ namespace TrialsCheeser
         {
             InitializeComponent();
             RenderOptions.ProcessRenderMode = RenderMode.SoftwareOnly;
+            HostIPTextBox.Text = Config.Get("lastSession/ip");
+            if (!int.TryParse(Config.Get("lastSession/threshold"), out MatchThreshold))
+                MatchThreshold = 5;
             ThresholdTextBox.Text = MatchThreshold.ToString();
             try
             {
-                GetCaptureDevice();
+                GetCaptureDevice(true);
             }
             catch (DllNotFoundException)
             {
@@ -50,24 +53,6 @@ namespace TrialsCheeser
             {
                 PacketTimer.Elapsed += Timer_Elapsed;
                 PacketTimer.Start();
-            }
-            SetIPInBoxFromLastSession();
-        }
-
-        private bool LastIPFileExists() {
-            return File.Exists(LastIPFilePath);
-        }
-
-        private void SetIPInBoxFromLastSession()
-        {
-            if (LastIPFileExists() && !File.ReadAllText(LastIPFilePath).Equals(""))
-            {
-                HostIPTextBox.Text = File.ReadAllText(LastIPFilePath);
-            }
-            else
-            {
-                HostIPTextBox.Text = "";
-                File.Create(LastIPFilePath);
             }
         }
 
@@ -108,19 +93,36 @@ namespace TrialsCheeser
             PacketCount += 1;
         }
 
-        private void GetCaptureDevice()
+        private void GetCaptureDevice(bool firstOpen = false)
         {
             if (Device != null)
                 Device.StopAndClose();
-            var w = new DevicePickerWindow();
-            w.ShowDialog();
-            if (w.SelectedDevice == null && Device == null)
+            LibPcapLiveDevice selectedDevice = null;
+            if (firstOpen)
+            {
+                var lastDeviceName = Config.Get("lastSession/deviceName");
+                var devices = CaptureDeviceList.Instance;
+                foreach (var device in devices)
+                {
+                    if (device.Name == lastDeviceName)
+                    {
+                        selectedDevice = device as LibPcapLiveDevice;
+                    }
+                }
+            }
+            if (selectedDevice == null)
+            {
+                var w = new DevicePickerWindow();
+                w.ShowDialog();
+                selectedDevice = w.SelectedDevice as LibPcapLiveDevice;
+            }
+            if (selectedDevice == null && Device == null)
             {
                 Close();
             }
             else
             {
-                Device = (w.SelectedDevice != null) ? w.SelectedDevice as LibPcapLiveDevice : Device;
+                Device = selectedDevice ?? Device;
                 Device.OnPacketArrival -= OnPacketArrival;
                 Device.OnPacketArrival += OnPacketArrival;
                 Device.Open(DeviceMode.Promiscuous, 1000);
@@ -164,6 +166,11 @@ namespace TrialsCheeser
             e.CancelCommand();
         }
 
+        private void HostIPTextBox_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            e.Handled = e.Key == Key.Space;
+        }
+
         private void HostIPTextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
             e.Handled = NonIPPattern.IsMatch(e.Text);
@@ -174,8 +181,9 @@ namespace TrialsCheeser
             var caret = HostIPTextBox.CaretIndex;
             HostIPTextBox.Text = HostIPTextBox.Text.Replace(" ", string.Empty);
             HostIPTextBox.CaretIndex = caret;
-            SetDeviceFilter();
-            File.WriteAllText(LastIPFilePath, HostIPTextBox.Text);
+            if (Device != null)
+                SetDeviceFilter();
+            Config.Set("lastSession/ip", HostIPTextBox.Text);
         }
 
         private void ChangeThreshold(int changeBy)
@@ -207,6 +215,7 @@ namespace TrialsCheeser
             int value = int.Parse(ThresholdTextBox.Text);
             MatchThreshold = value;
             ThresholdTextBox.Text = value.ToString();
+            Config.Set("lastSession/threshold", ThresholdTextBox.Text);
         }
 
         private void ThresholdTextBox_Pasting(object sender, DataObjectPastingEventArgs e)
@@ -258,11 +267,6 @@ namespace TrialsCheeser
             PacketTimer.Enabled = false;
             if (Device != null)
                 Device.StopAndClose();
-        }
-
-        private void HostIPTextBox_PreviewKeyDown(object sender, KeyEventArgs e)
-        {
-            e.Handled = e.Key == Key.Space;
         }
     }
 }
