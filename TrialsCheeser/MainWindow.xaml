@@ -25,6 +25,8 @@
                 <TextBlock>
                     Match Threshold
                     <LineBreak />
+                    Packets/sec to consider the connection a match.
+                    <LineBreak />
                     Scroll or use arrow keys to change.
                 </TextBlock>
             </TextBox.ToolTip>
