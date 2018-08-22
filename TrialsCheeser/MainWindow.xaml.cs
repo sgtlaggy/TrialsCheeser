@@ -155,6 +155,16 @@ namespace TrialsCheeser
             {
                 var clip = (string)e.DataObject.GetData(typeof(string));
                 clip = NonIPPattern.Replace(clip, string.Empty);
+                var currentLength = HostIPTextBox.Text.Length;
+                if (currentLength == HostIPTextBox.MaxLength)
+                {
+                    e.CancelCommand();
+                    return;
+                }
+                else if (currentLength + clip.Length > HostIPTextBox.MaxLength)
+                {
+                    clip = clip.Substring(0, HostIPTextBox.MaxLength - currentLength);
+                }
                 var text = HostIPTextBox.Text;
                 var start = HostIPTextBox.SelectionStart;
                 var length = HostIPTextBox.SelectionLength;
@@ -241,7 +251,7 @@ namespace TrialsCheeser
             string status;
             try
             {
-                string response = (await HttpClient.GetStringAsync("https://ipinfo.io/ip")).Trim();
+                string response = await HttpClient.GetStringAsync("https://api.ipify.org/");
                 if (IPAddress.TryParse(response, out IPAddress ip))
                 {
                     Clipboard.SetText(ip.ToString());
@@ -249,12 +259,12 @@ namespace TrialsCheeser
                 }
                 else
                 {
-                    status = "Error";
+                    status = "Parse Error";
                 }
             }
             catch (HttpRequestException)
             {
-                status = "Error";
+                status = "Fetch Error";
             }
             CopyIPButton.Content = status;
             await Task.Delay(2000);
