@@ -156,20 +156,20 @@ namespace TrialsCheeser
                 var clip = (string)e.DataObject.GetData(typeof(string));
                 clip = NonIPPattern.Replace(clip, string.Empty);
                 var currentLength = HostIPTextBox.Text.Length;
+                var selectionLength = HostIPTextBox.SelectionLength;
                 if (currentLength == HostIPTextBox.MaxLength)
                 {
                     e.CancelCommand();
                     return;
                 }
-                else if (currentLength + clip.Length > HostIPTextBox.MaxLength)
+                else if (currentLength - selectionLength + clip.Length > HostIPTextBox.MaxLength)
                 {
-                    clip = clip.Substring(0, HostIPTextBox.MaxLength - currentLength);
+                    clip = clip.Substring(0, HostIPTextBox.MaxLength - currentLength + selectionLength);
                 }
                 var text = HostIPTextBox.Text;
                 var start = HostIPTextBox.SelectionStart;
-                var length = HostIPTextBox.SelectionLength;
                 var caret = HostIPTextBox.CaretIndex;
-                var newText = text.Substring(0, start) + clip + text.Substring(start + length);
+                var newText = text.Substring(0, start) + clip + text.Substring(start + selectionLength);
                 HostIPTextBox.Text = newText;
                 HostIPTextBox.CaretIndex = caret + clip.Length;
             }
