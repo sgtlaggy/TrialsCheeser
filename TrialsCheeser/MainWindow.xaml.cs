@@ -34,6 +34,8 @@ namespace TrialsCheeser
         {
             InitializeComponent();
             RenderOptions.ProcessRenderMode = RenderMode.SoftwareOnly;
+            var ontop = Config.Get("lastSession/onTop");
+            OnTopCheck.IsChecked = string.IsNullOrEmpty(ontop) ? false : bool.Parse(ontop);
             HostIPTextBox.Text = Config.Get("lastSession/ip");
             if (!int.TryParse(Config.Get("lastSession/threshold"), out MatchThreshold))
                 MatchThreshold = 5;
@@ -242,6 +244,12 @@ namespace TrialsCheeser
         private void DevicesButton_Click(object sender, RoutedEventArgs e)
         {
             GetCaptureDevice();
+        }
+
+        private void OnTopCheck_CheckedChanged(object sender, RoutedEventArgs e)
+        {
+            Config.Set("lastSession/onTop", OnTopCheck.IsChecked.ToString());
+            Topmost = OnTopCheck.IsChecked == null ? false : (bool)OnTopCheck.IsChecked;
         }
 
         private async void CopyIPButton_Click(object sender, RoutedEventArgs e)

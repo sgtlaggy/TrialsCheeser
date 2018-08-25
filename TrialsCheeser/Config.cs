@@ -1,22 +1,44 @@
 ﻿using System;
 using System.IO;
-using System.Xml;
+using System.Xml.Linq;
 
 namespace TrialsCheeser
 {
     public static class Config
     {
         private static readonly string Path = Environment.ExpandEnvironmentVariables(@"%LOCALAPPDATA%\TrialsCheeserConfig.xml");
-        private static XmlDocument Document;
+        private static XDocument Document;
+
+        private static XElement GetOrCreateElement(XContainer container, string name)
+        {
+            XElement element = container.Element(name);
+            if (element == null)
+            {
+                element = new XElement(name);
+                container.Add(element);
+            }
+            return element;
+        }
+
+        private static XElement GetElementByXpath(string xpath)
+        {
+            var element = Document.Element("settings");
+            foreach (string next in xpath.Split('/'))
+            {
+                element = GetOrCreateElement(element, next);
+            }
+            return element;
+        }
 
         public static string Get(string xpath)
         {
-            return Document.SelectSingleNode($"settings/{xpath}").InnerText;
+            return GetElementByXpath(xpath).Value;
         }
 
         public static void Set(string xpath, string value)
         {
-            Document.SelectSingleNode($"settings/{xpath}").InnerText = value;
+            var element = GetElementByXpath(xpath);
+            element.Value = value.ToString();
             Save();
         }
 
@@ -29,8 +51,7 @@ namespace TrialsCheeser
         {
             if (FileExists())
             {
-                Document = new XmlDocument();
-                Document.Load(Path);
+                Document = XDocument.Load(Path);
             }
             else
             {
@@ -45,16 +66,16 @@ namespace TrialsCheeser
 
         private static void LoadDefault()
         {
-            Document = new XmlDocument();
-            var settings = Document.CreateNode(XmlNodeType.Element, "settings", string.Empty);
-            Document.AppendChild(settings);
-            var lastSession = Document.CreateNode(XmlNodeType.Element, "lastSession", string.Empty);
-            settings.AppendChild(lastSession);
-            lastSession.AppendChild(Document.CreateNode(XmlNodeType.Element, "deviceName", string.Empty));
-            lastSession.AppendChild(Document.CreateNode(XmlNodeType.Element, "ip", string.Empty));
-            var threshold = Document.CreateNode(XmlNodeType.Element, "threshold", string.Empty);
-            threshold.InnerText = "5";
-            lastSession.AppendChild(threshold);
+            Document = new XDocument(
+                new XElement("settings",
+                    new XElement("lastSession",
+                        new XElement("deviceName"),
+                        new XElement("onTop"),
+                        new XElement("ip"),
+                        new XElement("threshold", "5")
+                    )
+                )
+            );
         }
     }
 }

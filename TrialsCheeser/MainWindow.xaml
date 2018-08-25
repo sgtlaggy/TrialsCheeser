@@ -18,7 +18,7 @@
             <ColumnDefinition Width="7*"/>
         </Grid.ColumnDefinitions>
         <Label Content="Other Host's IP" Padding="0" VerticalContentAlignment="Center"/>
-        <Button Name="DevicesButton" Content="Devices" IsDefault="False" HorizontalAlignment="Right" Grid.Row="0" Grid.Column="1" GotFocus="Button_FocusChanged" LostFocus="Button_FocusChanged" Click="DevicesButton_Click"/>
+        <Button Name="DevicesButton" Content="Devices" IsDefault="False" VerticalAlignment="Top" HorizontalAlignment="Right" Grid.Row="0" Grid.Column="1" GotFocus="Button_FocusChanged" LostFocus="Button_FocusChanged" Click="DevicesButton_Click"/>
         <TextBox Name="HostIPTextBox" Background="LightCoral" TextWrapping="NoWrap" MaxLength="15" VerticalContentAlignment="Center" Grid.Row="1" Margin="0 2 0 0" PreviewTextInput="HostIPTextBox_PreviewTextInput" TextChanged="HostIPTextBox_TextChanged" DataObject.Pasting="HostIPTextBox_Pasting" PreviewKeyDown="HostIPTextBox_PreviewKeyDown"/> <!-- LightCoral | LightGreen -->
         <TextBox Name="ThresholdTextBox" MaxLength="2" HorizontalAlignment="Right" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Width="35" Margin="0 2" Grid.Row="1" Grid.Column="1" MouseWheel="ThresholdTextBox_MouseWheel" PreviewKeyDown="ThresholdTextBox_PreviewKeyDown" PreviewTextInput="ThresholdTextBox_PreviewTextInput" TextChanged="ThresholdTextBox_TextChanged" DataObject.Pasting="ThresholdTextBox_Pasting">
             <TextBox.ToolTip>
@@ -39,7 +39,14 @@
             </Grid.ColumnDefinitions>
             <Ellipse Name="MatchCircle" Stretch="Uniform" Fill="Red" Stroke="Black" StrokeThickness="2" Margin="0 2 0 0" Grid.Column="0"/> <!-- Red | Orange | Lime -->
             <Label Name="MatchLabel" Content="Not matched." FontSize="18" VerticalAlignment="Center" Grid.Column="1" Grid.ColumnSpan="2"/> <!-- Not matched. | Checking... | Matched! -->
-            <Button Name="CopyIPButton" Content="Copy My IP" IsDefault="False" VerticalAlignment="Bottom" HorizontalAlignment="Right" HorizontalContentAlignment="Center" Width="75" Grid.Column="2" GotFocus="Button_FocusChanged" LostFocus="Button_FocusChanged" Click="CopyIPButton_Click"/> <!-- Copy My IP | Error | Copied -->
+            <Grid Grid.Column="3">
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <CheckBox Name="OnTopCheck" Content="On Top" HorizontalAlignment="Right" VerticalAlignment="Bottom" Checked="OnTopCheck_CheckedChanged" Unchecked="OnTopCheck_CheckedChanged"/>
+                <Button Name="CopyIPButton" Content="Copy My IP" IsDefault="False" VerticalAlignment="Bottom" HorizontalAlignment="Right" HorizontalContentAlignment="Center" Width="75" Grid.Row="1" GotFocus="Button_FocusChanged" LostFocus="Button_FocusChanged" Click="CopyIPButton_Click"/> <!-- Copy My IP | Error | Copied -->
+            </Grid>
         </Grid>
     </Grid>
 </Window>
