@@ -44,7 +44,7 @@
                     <RowDefinition/>
                     <RowDefinition/>
                 </Grid.RowDefinitions>
-                <CheckBox Name="OnTopCheck" Content="On Top" HorizontalAlignment="Right" VerticalAlignment="Bottom" Checked="OnTopCheck_CheckedChanged" Unchecked="OnTopCheck_CheckedChanged"/>
+                <CheckBox Name="OnTopCheck" Content="On Top" ToolTip="Game must be in any Windowed mode." HorizontalAlignment="Right" VerticalAlignment="Bottom" Checked="OnTopCheck_CheckedChanged" Unchecked="OnTopCheck_CheckedChanged"/>
                 <Button Name="CopyIPButton" Content="Copy My IP" IsDefault="False" VerticalAlignment="Bottom" HorizontalAlignment="Right" HorizontalContentAlignment="Center" Width="75" Grid.Row="1" GotFocus="Button_FocusChanged" LostFocus="Button_FocusChanged" Click="CopyIPButton_Click"/> <!-- Copy My IP | Error | Copied -->
             </Grid>
         </Grid>
